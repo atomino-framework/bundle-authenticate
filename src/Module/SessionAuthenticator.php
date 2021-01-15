@@ -43,7 +43,6 @@ class SessionAuthenticator{
 	}
 
 	public function deployRefreshToken(Response $response){
-		var_dump($this->authenticator->isAuthenticated());
 		if ($this->authenticator->isAuthenticated() && $refreshToken = $this->authenticator->createRefreshToken($this->timeoutRefresh)){
 			$response->headers->setCookie(new Cookie(self::REFRESH_TOKEN_COOKIE, $refreshToken, strtotime('now + ' . $this->timeoutRefresh.'seconds')));
 		}

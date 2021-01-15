@@ -3,7 +3,7 @@
 use JetBrains\PhpStorm\Pure;
 use Lcobucci\JWT\Configuration;
 
-abstract class Authenticator{
+class Authenticator{
 
 	const TOKEN_AUTH = 'AUTH';
 	const TOKEN_REFRESH = 'REFRESH';
@@ -13,10 +13,20 @@ abstract class Authenticator{
 	protected AuthenticableInterface|null $authenticated = null;
 	private int|null $strongExpiresAt = null;
 
-	public function __construct(private Configuration $jwtConfig){ }
+	public function __construct(private Configuration $jwtConfig, private string $authenticable){ }
 
-	abstract protected function findUser(string $login): AuthenticableInterface|null;
-	abstract protected function pickUser(int $id): AuthenticableInterface|null;
+	protected function findUser(string $login): AuthenticableInterface|null{
+		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $authenticable */
+		$authenticable = $this->authenticable;
+		return ($user = $authenticable::findUserByLogin($login))->isAuthenticable() ? $user : null;
+	}
+	protected function pickUser(int $id): AuthenticableInterface|null{
+		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $authenticable */
+		$authenticable = $this->authenticable;
+		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $user */
+		$user = $authenticable::pick($id);
+		return $user->isAuthenticable() ? $user : null;
+	}
 
 	public function get(): AuthenticableInterface|null{ return $this->authenticated; }
 	#[Pure] public function isAuthenticated(): bool{ return !is_null($this->authenticated); }
