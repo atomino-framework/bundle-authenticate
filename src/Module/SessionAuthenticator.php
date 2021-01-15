@@ -1,7 +1,9 @@
 <?php namespace Atomino\Molecules\Module\Authenticator;
 
 
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class SessionAuthenticator{
 
@@ -40,13 +42,18 @@ class SessionAuthenticator{
 		return $this->authenticator->isAuthenticated();
 	}
 
-	public function deployRefreshToken(){
-		if ($this->authenticator->isAuthenticated() && $refreshToken = $this->authenticator->createRefreshToken($this->timeoutRefresh)) $this->cookies->set(self::REFRESH_TOKEN_COOKIE, $refreshToken);
-		else $this->cookies->remove(static::REFRESH_TOKEN_COOKIE);
+	public function deployRefreshToken(Response $response){
+		var_dump($this->authenticator->isAuthenticated());
+		if ($this->authenticator->isAuthenticated() && $refreshToken = $this->authenticator->createRefreshToken($this->timeoutRefresh)){
+			$response->headers->setCookie(new Cookie(self::REFRESH_TOKEN_COOKIE, $refreshToken, strtotime('now + ' . $this->timeoutRefresh.'seconds')));
+		}
+		else $response->headers->clearCookie(static::REFRESH_TOKEN_COOKIE);
 	}
 
-	public function logout(){
+	public function logout(Response $response){
 		$this->authenticator->clear();
 		$this->session->remove(static::AUTH_TOKEN_SESSION);
+		$response->headers->clearCookie(static::REFRESH_TOKEN_COOKIE);
 	}
+	
 }

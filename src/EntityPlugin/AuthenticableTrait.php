@@ -1,5 +1,8 @@
 <?php namespace Atomino\Molecules\EntityPlugin\Authenticable;
 
+use Atomino\Core\Application;
+use Atomino\Molecules\Module\Authenticator\Authenticator;
+
 /**
  * @method static \Atomino\Entity\Model model();
  */
@@ -17,5 +20,7 @@ trait AuthenticableTrait{
 		$plugin = Authenticable::fetch(static::model());
 		return md5($this->{$plugin->password});
 	}
+	public static function isAuthenticated():bool{ return Application::DIC()->get(Authenticator::class)->isAuthenticated(); }
+	public static function getAuthenticated():static{ return Application::DIC()->get(Authenticator::class)->get(); }
 
 }
