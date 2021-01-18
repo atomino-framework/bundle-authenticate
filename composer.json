@@ -12,7 +12,8 @@
     "autoload": {
         "psr-4": {
             "Atomino\\Molecules\\Module\\Authenticator\\": "src/Module/",
-            "Atomino\\Molecules\\EntityPlugin\\Authenticable\\": "src/EntityPlugin/"
+            "Atomino\\Molecules\\EntityPlugin\\Authenticable\\": "src/EntityPlugin/",
+            "Atomino\\Molecules\\Middleware\\Auth\\": "src/Middleware/"
         }
     }
 }

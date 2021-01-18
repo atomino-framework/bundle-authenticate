@@ -18,7 +18,8 @@ class Authenticator{
 	protected function findUser(string $login): AuthenticableInterface|null{
 		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $authenticable */
 		$authenticable = $this->authenticable;
-		return ($user = $authenticable::findUserByLogin($login))->isAuthenticable() ? $user : null;
+		$user = $authenticable::findUserByLogin($login);
+		return $user;
 	}
 	protected function pickUser(int $id): AuthenticableInterface|null{
 		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $authenticable */
@@ -58,7 +59,10 @@ class Authenticator{
 	 * @return string|false token
 	 */
 	public function login(string $login, string $password, int $authTimeout, int $strongTimeout = 0): string|false{
-		return ( !is_null($user = $this->findUser($login)) && $user->checkPassword($password) ) ? $this->createAuthToken($user, $authTimeout, $strongTimeout) : false;
+		if( ($user = $this->findUser($login))?->checkPassword($password) && $user->isAuthenticable() ){
+			return $this->createAuthToken($user, $authTimeout, $strongTimeout);
+		}
+		return false;
 	}
 	public function createRefreshToken($timeout): string|false{ return $this->authenticated ? $this->createToken($this->authenticated, self::TOKEN_REFRESH, $timeout) : false; }
 

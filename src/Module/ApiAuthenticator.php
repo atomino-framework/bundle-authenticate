@@ -7,7 +7,9 @@ class ApiAuthenticator{
 	protected const AUTH_HEADER = 'Authorization';
 	protected const AUTH_PREFIX = 'Bearer ';
 
-	public function __construct(private Authenticator $authenticator, private Request $request, protected int $timeoutAuth = 60*60*10, protected int $timeoutStrong = 60 * 10, protected int $timeoutRefresh = 30 * 24 * 60 * 60){
+	public function __construct(private Authenticator $authenticator, private Request $request, protected int $timeoutAuth = 60*60*10, protected int $timeoutStrong = 60 * 10, protected int $timeoutRefresh = 30 * 24 * 60 * 60){}
+
+	public function state(){
 		!is_null($authToken = $this->parseHeader()) && $this->authenticator->authenticate($authToken);
 	}
 

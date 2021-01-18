@@ -16,9 +16,7 @@ class SessionAuthenticator{
 	private \Symfony\Component\HttpFoundation\InputBag $cookies;
 
 	public function __construct(private Authenticator $authenticator, private Request $request, protected int $timeoutAuth = 0, protected int $timeoutStrong = 60*5, protected int $timeoutRefresh = 30*24*60*60 ){
-
 		if(!$this->request->hasSession()) $this->request->setSession(Application::DIC()->get(SessionInterface::class));
-
 		$this->session = $this->request->getSession();
 		$this->cookies = $this->request->cookies;
 
@@ -27,16 +25,13 @@ class SessionAuthenticator{
 			if ($this->authenticator->authenticate($authToken)) return;
 			$this->session->remove(static::AUTH_TOKEN_SESSION);
 		}
-
 		$refreshToken = $this->cookies->get(static::REFRESH_TOKEN_COOKIE);
 		if (!is_null($refreshToken)){
 			if (
 				( $authToken = $this->authenticator->refreshAuthToken($refreshToken, $this->timeoutAuth) ) &&
 				$this->authenticator->authenticate($authToken)
 			) $this->session->set(static::AUTH_TOKEN_SESSION, $authToken);
-			$this->deployRefreshToken();
 		}
-
 	}
 
 	public function login(string $login, string $password): bool{
@@ -44,6 +39,12 @@ class SessionAuthenticator{
 			$this->session->set(static::AUTH_TOKEN_SESSION, $authToken);
 		}
 		return $this->authenticator->isAuthenticated();
+	}
+
+	public function redeployRefreshToken(Response $response){
+		if($this->authenticator->isAuthenticated() && $this->cookies->has(static::REFRESH_TOKEN_COOKIE)){
+			$this->deployRefreshToken($response);
+		}
 	}
 
 	public function deployRefreshToken(Response $response){
