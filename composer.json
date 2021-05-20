@@ -1,5 +1,5 @@
 {
-    "name": "atomino/authenticate",
+    "name": "atomino/plugin-authenticate",
     "authors": [
         {
             "name": "laborci",
