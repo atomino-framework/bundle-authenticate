@@ -1,5 +1,5 @@
 {
-    "name": "atomino/plugin-authenticate",
+    "name": "atomino/bundle-authenticate",
     "authors": [
         {
             "name": "laborci",
@@ -11,9 +11,9 @@
 	},
     "autoload": {
         "psr-4": {
-            "Atomino\\Molecules\\Module\\Authenticator\\": "src/Module/",
-            "Atomino\\Molecules\\EntityPlugin\\Authenticable\\": "src/EntityPlugin/",
-            "Atomino\\Molecules\\Middleware\\Auth\\": "src/Middleware/"
+            "Atomino\\Bundle\\Authenticate\\": "bundle/",
+            "Atomino\\Carbon\\Plugins\\Authenticate\\": "plugin-carbon/",
+            "Atomino\\Mercury\\Plugins\\Authenticate\\": "plugin-mercury/"
         }
     }
 }

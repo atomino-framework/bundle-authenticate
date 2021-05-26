@@ -1,7 +1,7 @@
-<?php namespace Atomino\Molecules\Middleware\Auth;
+<?php namespace Atomino\Mercury\Plugins\Authenticate;
 
-use Atomino\Molecules\Module\Authenticator\ApiAuthenticator;
-use Atomino\RequestPipeline\Pipeline\Handler;
+use Atomino\Bundle\Authenticate\ApiAuthenticator;
+use Atomino\Mercury\Pipeline\Handler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

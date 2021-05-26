@@ -1,4 +1,4 @@
-<?php namespace Atomino\Molecules\Module\Authenticator;
+<?php namespace Atomino\Bundle\Authenticate;
 
 use JetBrains\PhpStorm\Pure;
 use Lcobucci\JWT\Configuration;
@@ -17,15 +17,15 @@ class Authenticator {
 	public function __construct(private Configuration $jwtConfig, private string $authenticable) { }
 
 	protected function findUser(string $login): AuthenticableInterface|null {
-		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $authenticable */
+		/** @var \Atomino\Bundle\Authenticate\AuthenticableInterface $authenticable */
 		$authenticable = $this->authenticable;
 		$user = $authenticable::findUserByLogin($login);
 		return $user;
 	}
 	protected function pickUser(int $id): AuthenticableInterface|null {
-		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $authenticable */
+		/** @var \Atomino\Bundle\Authenticate\AuthenticableInterface $authenticable */
 		$authenticable = $this->authenticable;
-		/** @var \Atomino\Molecules\Module\Authenticator\AuthenticableInterface $user */
+		/** @var \Atomino\Bundle\Authenticate\AuthenticableInterface $user */
 		$user = $authenticable::pick($id);
 		return $user->isAuthenticable() ? $user : null;
 	}
