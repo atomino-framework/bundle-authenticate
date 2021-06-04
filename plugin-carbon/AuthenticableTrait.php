@@ -1,8 +1,8 @@
 <?php namespace Atomino\Carbon\Plugins\Authenticate;
 
 use Atomino\Bundle\Authenticate\Authenticator;
-use Atomino\Core\Application;
 use Atomino\Carbon\Database\Finder\Filter;
+use function Atomino\dic;
 
 /**
  * @method static \Atomino\Carbon\Model model();
@@ -21,8 +21,8 @@ trait AuthenticableTrait {
 		$plugin = Authenticable::fetch(static::model());
 		return md5($this->{$plugin->password});
 	}
-	public static function isAuthenticated(): bool { return Application::DIC()->get(Authenticator::class)->isAuthenticated(); }
-	public static function getAuthenticated(): static|null { return Application::DIC()->get(Authenticator::class)->get(); }
+	public static function isAuthenticated(): bool { return dic()->get(Authenticator::class)->isAuthenticated(); }
+	public static function getAuthenticated(): static|null { return dic()->get(Authenticator::class)->get(); }
 	public function isAuthenticable(): bool { return true; }
 	public static function findUserByLogin(string $login): static|null {
 		$plugin = Authenticable::fetch(static::model());
