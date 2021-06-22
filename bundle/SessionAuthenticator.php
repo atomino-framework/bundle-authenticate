@@ -1,10 +1,10 @@
 <?php namespace Atomino\Bundle\Authenticate;
 
+use DI\Container;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use function Atomino\dic;
 
 class SessionAuthenticator {
 
@@ -14,8 +14,15 @@ class SessionAuthenticator {
 	private \Symfony\Component\HttpFoundation\Session\SessionInterface $session;
 	private \Symfony\Component\HttpFoundation\InputBag $cookies;
 
-	public function __construct(private Authenticator $authenticator, private Request $request, protected int $timeoutAuth = 0, protected int $timeoutStrong = 60 * 5, protected int $timeoutRefresh = 30 * 24 * 60 * 60) {
-		if (!$this->request->hasSession()) $this->request->setSession(dic()->get(SessionInterface::class));
+	public function __construct(
+		private Authenticator $authenticator,
+		private Request $request,
+		private Container $container,
+		protected int $timeoutAuth = 0,
+		protected int $timeoutStrong = 60 * 5,
+		protected int $timeoutRefresh = 30 * 24 * 60 * 60
+	) {
+		if (!$this->request->hasSession()) $this->request->setSession($container->get(SessionInterface::class));
 		$this->session = $this->request->getSession();
 		$this->cookies = $this->request->cookies;
 
