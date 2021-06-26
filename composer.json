@@ -1,5 +1,6 @@
 {
     "name": "atomino/bundle-authenticate",
+    "license": "MIT",
     "authors": [
         {
             "name": "laborci",
