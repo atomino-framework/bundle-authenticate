@@ -27,6 +27,7 @@ class Authenticator {
 		$authenticable = $this->authenticable;
 		/** @var \Atomino\Bundle\Authenticate\AuthenticableInterface $user */
 		$user = $authenticable::pick($id);
+		if(is_null($user)) return null;
 		return $user->isAuthenticable() ? $user : null;
 	}
 
