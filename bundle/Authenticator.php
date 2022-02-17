@@ -74,12 +74,16 @@ class Authenticator {
 		return $this->createToken($user, self::TOKEN_AUTH, $authTimeout, $claims);
 	}
 
+	protected function getPasswordChecksum(AuthenticableInterface $user):string{
+		return $user->getPasswordChecksum();
+	}
+
 	protected function createToken(AuthenticableInterface $user, string $type, int $expiration = 0, array $claims = []): string {
 		$builder = $this->jwtConfig->builder();
 		foreach ($claims as $claim => $value) $builder->withClaim($claim, $value);
 		$builder->issuedAt(new \DateTimeImmutable());
 		$builder->relatedTo($user->id);
-		$builder->withClaim(static::CHECKSUM, $user->getPasswordChecksum());
+		$builder->withClaim(static::CHECKSUM, $this->getPasswordChecksum($user));
 		$builder->issuedBy($type);
 		if ($expiration > 0) $builder->expiresAt(\DateTimeImmutable::createFromFormat('U', time() + $expiration));
 		return $builder->getToken($this->jwtConfig->signer(), $this->jwtConfig->signingKey())->toString();
@@ -101,7 +105,7 @@ class Authenticator {
 		if ($token->claims()->get('iss') !== $type) return null;
 		if (!is_null($expiration) && (new \DateTimeImmutable())->getTimestamp() > $expiration->getTimestamp()) return null;
 		if (is_null($user = $this->pickUser(intval($token->claims()->get('sub'))))) return null;
-		if ($user->getPasswordChecksum() !== $token->claims()->get(static::CHECKSUM)) return null;
+		if ($this->getPasswordChecksum($user) !== $token->claims()->get(static::CHECKSUM)) return null;
 
 		return $user;
 	}
