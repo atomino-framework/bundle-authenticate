@@ -18,6 +18,7 @@ trait AuthenticableTrait {
 	}
 	public function getPasswordChecksum(): string {
 		$plugin = Authenticable::fetch(static::model());
+		if(is_null($this->{$plugin->password})) return md5($this->id);
 		return md5($this->{$plugin->password});
 	}
 	public static function isAuthenticated(): bool { return static::model()->getContainer()->get(Authenticator::class)->isAuthenticated(); }

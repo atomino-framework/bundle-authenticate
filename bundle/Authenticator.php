@@ -68,7 +68,7 @@ class Authenticator {
 	}
 	public function createRefreshToken($timeout): string|false { return $this->authenticated ? $this->createToken($this->authenticated, self::TOKEN_REFRESH, $timeout) : false; }
 
-	protected function createAuthToken(AuthenticableInterface $user, int $authTimeout, int $strongTimeout = 0): string {
+	public function createAuthToken(AuthenticableInterface $user, int $authTimeout, int $strongTimeout = 0): string {
 		$claims = [];
 		$claims[static::STRONG_EXPIRES_AT] = time() + $strongTimeout;
 		return $this->createToken($user, self::TOKEN_AUTH, $authTimeout, $claims);

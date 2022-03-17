@@ -5,6 +5,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use function Atomino\debug;
 
 class SessionAuthenticator {
 
@@ -16,11 +17,11 @@ class SessionAuthenticator {
 
 	public function __construct(
 		private Authenticator $authenticator,
-		private Request $request,
-		private Container $container,
-		protected int $timeoutAuth = 0,
-		protected int $timeoutStrong = 60 * 5,
-		protected int $timeoutRefresh = 30 * 24 * 60 * 60
+		private Request       $request,
+		private Container     $container,
+		protected int         $timeoutAuth = 0,
+		protected int         $timeoutStrong = 60 * 5,
+		protected int         $timeoutRefresh = 30 * 24 * 60 * 60
 	) {
 		if (!$this->request->hasSession()) $this->request->setSession($container->get(SessionInterface::class));
 		$this->session = $this->request->getSession();
@@ -40,12 +41,19 @@ class SessionAuthenticator {
 		}
 	}
 
+	public function getAuthenticator(): Authenticator { return $this->authenticator; }
+
 	public function login(string $login, string $password): bool {
-		if (($authToken = $this->authenticator->login($login, $password, $this->timeoutAuth, $this->timeoutStrong)) && $this->authenticator->authenticate($authToken)) {
-			$this->session->set(static::AUTH_TOKEN_SESSION, $authToken);
+		$authToken = $this->authenticator->login($login, $password, $this->timeoutAuth, $this->timeoutStrong);
+
+		if ($authToken && $this->authenticator->authenticate($authToken)) {
+			$this->deployAuthToken($authToken);
 		}
 		return $this->authenticator->isAuthenticated();
 	}
+
+	public function deployAuthToken($authToken) {
+		$this->session->set(static::AUTH_TOKEN_SESSION, $authToken); }
 
 	public function redeployRefreshToken(Response $response) {
 		if ($this->authenticator->isAuthenticated() && $this->cookies->has(static::REFRESH_TOKEN_COOKIE)) {
